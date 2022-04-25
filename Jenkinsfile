@@ -49,7 +49,7 @@ spec:
     stage('Checkout www repo') {
       steps {
         dir('www') {
-            sshagent(['git.eclipse.org-bot-ssh']) {
+            sshagent(['github-bot-ssh']) {
                 sh '''
                     git clone git@github.com:eclipse-platform/www.eclipse.org-{PROJECT_NAME}.git .
                     git checkout ${BRANCH_NAME}
@@ -92,13 +92,13 @@ spec:
       steps {
         sh 'rm -rf www/* && cp -Rvf hugo/public/* www/'
         dir('www') {
-            sshagent(['git.eclipse.org-bot-ssh']) {
+            sshagent(['github-bot-ssh']) {
                 sh '''
                 git add -A
                 if ! git diff --cached --exit-code; then
                   echo "Changes have been detected, publishing to repo 'www.eclipse.org/${PROJECT_NAME}'"
-                  git config user.email "${PROJECT_NAME}-bot@eclipse.org"
-                  git config user.name "${PROJECT_BOT_NAME}"
+                  git config --global user.email "releng-bot@eclipse.org"
+                  git config --global user.name "Eclipse Releng Bot"
                   git commit -m "Website build ${JOB_NAME}-${BUILD_NUMBER}"
                   git log --graph --abbrev-commit --date=relative -n 5
                   git push origin HEAD:${BRANCH_NAME}
